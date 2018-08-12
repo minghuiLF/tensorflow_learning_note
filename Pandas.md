@@ -2,9 +2,9 @@
 
 
 
-#Ipython 
+# Ipython 
 
-<img src="frequency_magic_commands.png"/>
+<img src="frequency_magic_command.png"/>
 
 %run
 %run -i
