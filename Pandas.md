@@ -15,7 +15,7 @@
 <img src="ndarray.png"/>
 
 ~~~~~
-  Data=[1,2,3]
+  Data=[1,2,3]                                              
   np.array(Data)
   array([ 1, 2, 3]
   
@@ -28,12 +28,21 @@
   np.ones(10)
   array([ 1., 1., 1., 1., 1., 1., 1., 1., 1., 1.])
   
-  np.arange(15)
+  np.arange(15)                                                           
   array([ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
   
   np.full(10,5)
   array([ 5*10])
   
+  #一些常见矩阵创建方法
+  
+  arr = np.arange(32).reshape((8, 4))                         
+  
+  arr = np.empty((8, 4))
+  for i in range(8):
+      arr[i] = i
+  
+  np.full((10,5),True)
   
   D.dtype
   D.ndim
@@ -321,5 +330,33 @@ array([[ 5., 5., 5., 5.],
 
 ~~~~~~~~~
 
+__The behavior of fancy indexing in this case is a bit different from what some users
+might have expected (myself included), which is the rectangular region formed by
+selecting a subset of the matrix’s rows and columns. Here is one way to get that:__
+
+~~~~
+
+array([[ 0, 1, 2, 3],
+[ 4, 5, 6, 7],
+[ 8, 9, 10, 11],
+[12, 13, 14, 15],
+[16, 17, 18, 19],
+[20, 21, 22, 23],
+[24, 25, 26, 27],
+[28, 29, 30, 31]])
 
 
+In [124]: arr[[1, 5, 7, 2], [0, 3, 1, 2]]               #(1,0)(5,3)(7,1)(2,2)
+Out[124]: array([ 4, 23, 29, 10])
+
+In [125]: arr[[1, 5, 7, 2]][:, [0, 3, 1, 2]]
+Out[125]:
+array([[ 4, 7, 5, 6],
+       [20, 23, 21, 22],
+       [28, 31, 29, 30],
+       [ 8, 11, 9, 10]])
+
+~~~~
+
+__Keep in mind that fancy indexing, unlike slicing, always copies the data into a new
+array.__
