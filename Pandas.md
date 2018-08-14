@@ -75,6 +75,21 @@
 ~~~~~~~~
 
 
+## dtype hierarchy
+
+
+~~~~~
+np.issubdtype(sub,parent_type)
+
+np.float64.mro()
+~~~~~
+
+
+<img src="dtype_hierarchy.png">
+
+
+
+
 ## strids
   每个dim上该arry存储的byte
   以此来访问每一个数据
@@ -360,3 +375,143 @@ array([[ 4, 7, 5, 6],
 
 __Keep in mind that fancy indexing, unlike slicing, always copies the data into a new
 array.__
+
+
+
+## Transposing Arrays and Swapping Axes
+
+
+<img src="reshape.png" />
+
+~~~~~~~
+
+arr = np.arange(15).reshape((3, 5))      #reshape not copy 
+
+arr
+array([[ 0, 1, 2, 3, 4],
+      [ 5, 6, 7, 8, 9],
+      [10, 11, 12, 13, 14]])
+
+arr.T
+array([[ 0, 5, 10],
+      [ 1, 6, 11],
+      [ 2, 7, 12],
+      [ 3, 8, 13],
+      [ 4, 9, 14]])
+
+
+In [22]: arr = np.arange(15)  
+In [23]: arr.reshape((5, -1))       # -1 自动给那一个维度算出数量 前提是要能整除不然报错
+
+Out[23]:
+array([[ 0, 1, 2],
+       [ 3, 4, 5],
+       [ 6, 7, 8],
+       [ 9, 10, 11],
+       [12, 13, 14]])
+
+拆开
+
+arr.ravel()                             # not copy
+array([ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
+
+arr.flatten()                           # copy
+array([ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
+~~~~~~~
+
+
+
+
+- Transpose
+~~~~~~~
+
+
+
+
+In [132]: arr = np.arange(16).reshape((2, 2, 4))
+
+In [133]: arr
+Out[133]:                                          
+array([[[ 0, 1, 2, 3],
+        [ 4, 5, 6, 7]],
+        [[ 8, 9, 10, 11],
+        [12, 13, 14, 15]]])
+
+In [134]: arr.transpose((1, 0, 2))               #这里的参数是axis 的 index    0轴 的shape为 2
+Out[134]:                                        #                            1轴 的shape也为2
+array([[[ 0, 1, 2, 3],                           #                            2轴  的shape为4
+        [ 8, 9, 10, 11]],                        #   可以理解为 0,1,2 就是正常顺序的切法  比如 平着切 竖着切 横着切
+        [[ 4, 5, 6, 7],                          #   然后他的transpose就是按照index的顺序来切
+        [12, 13, 14, 15]]])
+
+arr.transpose((2,1,0))
+array([[[ 0,   8],
+        [ 4,  12]],
+        
+        [[ 1,  9],
+         [ 5, 13]],
+        
+        [[ 2, 10],
+         [6,  14]],
+
+        [[ 3, 11],
+         [7,  15]]])
+
+----------------------------
+
+In [135]: arr
+Out[135]:
+array([[[ 0, 1, 2, 3],
+        [ 4, 5, 6, 7]],
+        [[ 8, 9, 10, 11],
+        [12, 13, 14, 15]]])
+
+In [136]: arr.swapaxes(1, 2)     #交换指定轴顺序
+Out[136]:
+array([[[ 0, 4],
+        [ 1, 5],
+        [ 2, 6],
+        [ 3, 7]],
+        [[ 8, 12],
+        [ 9, 13],
+        [10, 14],
+        [11, 15]]])
+
+
+~~~~~~~
+__all above similarly returns a view on the data without making a copy__
+
+## Universal Functions: Fast Element-Wise Array Functions
+
+- Fast , element-wise
+
+~~~~~~
+unary ufuncs:          # unique 函数操作的对象是一个
+      np.sqrt()    x**0.5
+
+      np.exp()     e**x
+      
+binary ufuncs:         # binary!! 函数操作的对象是两个
+      np.maximum(x, y)
+      np.add(x,y,z)    # notice here will take the answer to the >> z not add 3 array
+      
+remainder, whole_part = np.modf(arr)  #返回整数部分和小数部分(fractional and integral part)
+                                      # remainder小数  whole_part 整数 老外思维真神奇
+                                      
+
+arr
+array([-3.2623, -6.0915, -6.663 , 5.3731, 3.6182, 3.45 , 5.0077])
+
+np.sqrt(arr)
+array([ nan, nan, nan, 2.318 , 1.9022, 1.8574, 2.2378])
+
+np.sqrt(arr, arr)      #同上面z 第二个是输出到 >> arr
+~~~~~~
+
+<img src="unary_uf.png">
+
+
+<img src="bnary_uf.png">
+
+
+
