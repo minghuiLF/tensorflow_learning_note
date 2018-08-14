@@ -146,7 +146,7 @@ np.float64.mro()
  [::-1] reverse
  
  arr = np.ones(10)
- arr[5,8] = 12 普通的array 不可以
+ arr[5:8] = 12 普通的array 不可以
  : array([1,1,1,1,1,12,12,12,1,1])
  
  arr_slice = arr[5:8]
