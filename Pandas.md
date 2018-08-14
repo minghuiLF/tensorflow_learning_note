@@ -42,7 +42,8 @@
   for i in range(8):
       arr[i] = i
   
-  np.full((10,5),True)
+  arr=np.ones(10,dtype='?')    #bool
+  np.full((10,5),True) 
   
   D.dtype
   D.ndim
@@ -163,7 +164,7 @@ np.float64.mro()
  ~~~~~~~
  
  
- <img  src="2dindex.png" />
+ <img width="300"  src="2dindex.png" />
  
  ~~~~~~~
  
@@ -215,7 +216,7 @@ arr2d[:, :1]     #if you want the 'column' version use slice
 __Note that a colon by itself means to take the entire__
 __axis, so you can slice only higher dimensional axes by colon [:]__
 
-<img src="2dslice.png"/>
+<img  width="500" src="2dslice.png"/>
 
 
 ## Boolean Indexing
