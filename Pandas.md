@@ -801,3 +801,7 @@ np.tile(arr, (3, 2))
       
       
 ~~~~~~~~~~
+
+ meshgrid , np.where  repeating tile concatenating  and split r_ c_
+ 
+ from take,put 
