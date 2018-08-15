@@ -606,6 +606,10 @@ array([[-0.5031, -0.6223, -0.9212, -0.7262],
 
 
 
+
+
+
+
 ## Concatenating and Splitting Arrays
 
 ~~~~~~~~
@@ -667,3 +671,133 @@ array([[ 0.0929, 0.2817],
 ~~~~~~
 
 <img src="concatenat_split.png" />
+
+### r_ and c_
+~~~~~~~
+In [47]: arr = np.arange(6)
+
+In [48]: arr1 = arr.reshape((3, 2))
+
+In [49]: arr2 = np.random.randn(3, 2)
+
+In [50]: np.r_[arr1, arr2]
+Out[50]:
+array([[ 0. , 1. ],
+       [ 2. , 3. ],
+       [ 4. , 5. ],
+       [ 1.0072, -1.2962],
+       [ 0.275 , 0.2289],
+       [ 1.3529, 0.8864]])
+
+In [51]: np.c_[np.r_[arr1, arr2], arr]
+Out[51]:
+array([[ 0. , 1. , 0. ],
+      [ 2. , 3. , 1. ],
+      [ 4. , 5. , 2. ],
+      [ 1.0072, -1.2962, 3. ],
+      [ 0.275 , 0.2289, 4. ],
+      [ 1.3529, 0.8864, 5. ]])
+
+~~~~~~~
+
+ - These additionally can translate slices to arrays:
+
+~~~~~~
+np.c_[1:6, -10:-5]
+
+array([[ 1, -10],
+       [ 2, -9],
+       [ 3, -8],
+       [ 4, -7],
+       [ 5, -6]])
+
+~~~~~~
+
+## Repeating Elements: tile and repeat:
+
+- repeat
+~~~~~~~~~~
+
+In [53]: arr = np.arange(3)
+In [54]: arr
+Out[54]: array([0, 1, 2])
+
+In [55]: arr.repeat(3)
+Out[55]: array([0, 0, 0, 1, 1, 1, 2, 2, 2])
+
+# By default, if you pass an integer, each element will be repeated that number of times.
+# If you pass an array of integers, each element can be repeated a different number of
+# times:
+
+In [56]: arr.repeat([2, 3, 4])
+Out[56]: array([0, 0, 1, 1, 1, 2, 2, 2, 2])
+
+# Multidimensional arrays can have their elements repeated along a particular axis.
+
+array([[-2.0016, -0.3718],
+       [ 1.669 , -0.4386]])
+       
+In [59]: arr.repeat(2, axis=0)
+Out[59]:
+array([[-2.0016, -0.3718],
+       [-2.0016, -0.3718],
+       [ 1.669 , -0.4386],
+       [ 1.669 , -0.4386]])
+
+# !!!  Note that if no axis is passed, the array will be flattened first then repeat
+
+
+In [60]: arr.repeat([2, 3], axis=0)
+Out[60]:
+array([[-2.0016, -0.3718],
+       [-2.0016, -0.3718],
+       [ 1.669 , -0.4386],
+       [ 1.669 , -0.4386],
+       [ 1.669 , -0.4386]])
+       
+In [61]: arr.repeat([2, 3], axis=1)
+Out[61]:
+array([[-2.0016, -2.0016, -0.3718, -0.3718, -0.3718],
+       [ 1.669 , 1.669 , -0.4386, -0.4386, -0.4386]])
+
+
+~~~~~~~~~~
+
+
+- tile
+
+~~~~~~~~~~
+# tile, on the other hand, is a shortcut for stacking copies of an array along an axis.
+# Visually you can think of it as being akin to “laying down tiles”:
+
+In [62]: arr
+Out[62]:
+array([[-2.0016, -0.3718],
+       [ 1.669 , -0.4386]])
+       
+In [63]: np.tile(arr, 2)
+Out[63]:
+array([[-2.0016, -0.3718, -2.0016, -0.3718],
+       [ 1.669 , -0.4386, 1.669 , -0.4386]])
+
+# The second argument is the number of tiles; with a scalar, the tiling is made row by
+# row, rather than column by column. The second argument to tile can be a tuple
+# indicating the layout of the “tiling”:        
+# 贴瓷砖！！！！
+np.tile(arr, 3)
+
+      [][][]
+
+np.tile(arr, (2, 1))
+
+      []
+      []
+      
+np.tile(arr, (3, 2))
+
+      [][]
+      [][]
+      [][]
+      
+      
+~~~~~~~~~~
