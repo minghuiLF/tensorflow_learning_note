@@ -541,4 +541,58 @@ xs, ys = np.meshgrid(points, points)
 
 ~~~~~~
 
+## Expressing Conditional Logic as Array Operations
+ - np.where(condition,[x,y])
+~~~~~~
+In [165]: xarr = np.array([1.1, 1.2, 1.3, 1.4, 1.5])
+In [166]: yarr = np.array([2.1, 2.2, 2.3, 2.4, 2.5])
+In [167]: cond = np.array([True, False, True, True, False])
+
+In [168]: result = [(x if c else y)
+.....: for x, y, c in zip(xarr, yarr, cond)]
+In [169]: result
+Out[169]: [1.1, 2.2, 1.3, 1.4, 2.5]
+
+
+In [170]: result = np.where(cond, xarr, yarr)
+In [171]: result
+Out[171]: array([ 1.1, 2.2, 1.3, 1.4, 2.5])
+~~~~~~
+ 
+ - **The second and third arguments to np.where don’t need to be arrays; one or both of
+them can be scalars.**
+
+~~~~~
+
+arr = np.random.randn(4, 4)
+
+array([[-0.5031, -0.6223, -0.9212, -0.7262],
+       [ 0.2229, 0.0513, -1.1577, 0.8167],
+       [ 0.4336, 1.0107, 1.8249, -0.9975],
+       [ 0.8506, -0.1316, 0.9124, 0.1882]])
+
+arr>0
+array([[False, False, False, False],
+       [ True, True, False, True],
+       [ True, True, True, False],
+       [ True, False, True, True]], dtype=bool)
+
+
+np.where(arr > 0, 2, -2)
+
+array([[-2, -2, -2, -2],
+      [ 2, 2, -2, 2],
+      [ 2, 2, 2, -2],
+      [ 2, -2, 2, 2]])
+
+
+# You can combine scalars and arrays when using np.where
+
+In [176]: np.where(arr > 0, 2, arr) # set only positive values to 2
+Out[176]:
+array([[-0.5031, -0.6223, -0.9212, -0.7262],
+       [ 2. , 2. , -1.1577, 2. ],
+       [ 2. , 2. , 2. , -0.9975],
+       [ 2. , -0.1316, 2. , 2. ]])
+~~~~~
 
