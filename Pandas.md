@@ -418,8 +418,16 @@ array([ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
 
 arr.flatten()                           # copy
 array([ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
+
+arr=np.arange(9).reshape(3,3)
+np.ravel(arr,order="F")             # order "C" \ "F"
+array([0,3,6,1,4,7,2,5,8])
 ~~~~~~~
 
+- C/row major order
+ - Traverse higher dimensions irst (e.g., axis 1 before advancing on axis 0).
+- Fortran/column major order
+ - Traverse higher dimensions last (e.g., axis 0 before advancing on axis 1).
 
 
 
@@ -596,3 +604,66 @@ array([[-0.5031, -0.6223, -0.9212, -0.7262],
        [ 2. , -0.1316, 2. , 2. ]])
 ~~~~~
 
+
+
+## Concatenating and Splitting Arrays
+
+~~~~~~~~
+
+In [35]: arr1 = np.array([[1, 2, 3], [4, 5, 6]])
+In [36]: arr2 = np.array([[7, 8, 9], [10, 11, 12]])
+
+In [37]: np.concatenate([arr1, arr2], axis=0)
+Out[37]:
+array([[ 1, 2, 3],
+       [ 4, 5, 6],
+       [ 7, 8, 9],
+       [10, 11, 12]])
+In [38]: np.concatenate([arr1, arr2], axis=1)
+Out[38]:
+array([[ 1, 2, 3, 7, 8, 9],
+       [ 4, 5, 6, 10, 11, 12]])
+
+# There are some convenience functions, like vstack and hstack, for common kinds of
+# concatenation.
+
+np.vstack((arr1, arr2))
+
+np.hstack((arr1, arr2))
+
+
+~~~~~~~~
+
+ - split, on the other hand, slices apart an array into multiple arrays along an axis:
+
+~~~~~~
+
+In [41]: arr = np.random.randn(5, 2)
+In [42]: arr
+Out[42]:
+array([[-0.2047, 0.4789],
+[-0.5194, -0.5557],
+[ 1.9658, 1.3934],
+[ 0.0929, 0.2817],
+[ 0.769 , 1.2464]])
+
+In [43]: first, second, third = np.split(arr, [1, 3])  
+# The value [1, 3] passed to np.split indicate the indices at which to split the array
+into pieces.
+
+In [44]: first
+Out[44]: array([[-0.2047, 0.4789]])
+
+In [45]: second
+Out[45]:
+array([[-0.5194, -0.5557],
+       [ 1.9658, 1.3934]])
+
+In [46]: third
+Out[46]:
+array([[ 0.0929, 0.2817],
+       [ 0.769 , 1.2464]])
+
+~~~~~~
+
+<img src="concatenat_split.png" />
