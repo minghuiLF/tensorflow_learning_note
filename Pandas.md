@@ -515,4 +515,30 @@ np.sqrt(arr, arr)      #同上面z 第二个是输出到 >> arr
 <img src="bnary_uf.png">
 
 
+## Array-Oriented Programming with Arrays
+
+ - np.meshgrid(\*xi,*\*kwargs)  # Return coordinate matrices from coordinate vectors
+~~~~~~
+
+x= [1,2,3,4,5]
+c= [10,10,10,10]
+x1,x2=np.meshgrid(x,c)
+
+x1=[[1,2,3,4,5]]
+    [[1,2,3,4,5]]
+    [[1,2,3,4,5]]
+    [[1,2,3,4,5]]
+    
+x2 =[[10,10,10,10]]
+    [[10,10,10,10]]
+    [[10,10,10,10]]
+    [[10,10,10,10]]
+
+
+points = np.arange(-5, 5, 0.01) # 1000 equally spaced points
+
+xs, ys = np.meshgrid(points, points)
+
+~~~~~~
+
 
