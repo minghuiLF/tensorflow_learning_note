@@ -377,6 +377,42 @@ array([[ 4, 7, 5, 6],
 __Keep in mind that fancy indexing, unlike slicing, always copies the data into a new
 array.__
 
+## take put
+
+~~~~~~
+
+arr = np.arange(10) * 100
+inds = [7, 1, 2, 6]
+arr[inds]
+array([700, 100, 200, 600])
+
+arr.take(inds)
+array([700, 100, 200, 600])
+
+arr.put(inds, 42)
+arr
+array([ 0, 42, 42, 300, 400, 500, 42, 42, 800, 900])
+
+arr.put(inds, [40, 41, 42, 43])
+arr
+array([ 0, 41, 42, 300, 400, 500, 43, 40, 800, 900])
+
+inds = [2, 0, 2, 1]
+arr = np.random.randn(2, 4)
+arr
+
+array([[-0.5397, 0.477 , 3.2489, -1.0212],
+       [-0.5771, 0.1241, 0.3026, 0.5238]])
+arr.take(inds, axis=1)
+
+array([[ 3.2489, -0.5397, 3.2489, 0.477 ],
+       [ 0.3026, -0.5771, 0.3026, 0.1241]])
+
+
+~~~~~~
+
+
+
 
 
 ## Transposing Arrays and Swapping Axes
@@ -802,6 +838,66 @@ np.tile(arr, (3, 2))
       
 ~~~~~~~~~~
 
- meshgrid , np.where  repeating tile concatenating  and split r_ c_
- 
- from take,put 
+
+## Boradcasting
+
+- The Broadcasting Rule
+<p>Two arrays are compatible for broadcasting if for each trailing dimension (i.e., starting
+from the end) the axis lengths match or if either of the lengths is 1. Broadcasting is
+then performed over the missing or length 1 dimensions.</p>
+
+<img width="500" src="broadcast1.png" />
+
+
+<img width="500" src="broadcast2.png" />
+
+
+<img width="500" src="broadcast3.png" />
+
+<p> for example here shape(3,4) can not broadcast we need shape(3,4,1) or (3,1,2)  or (3,1,1),or(1,1,1)(1,4,1)
+(each trailing need match or 1)<p/>
+
+
+<img width="500" src="broadcast4.png" />
+
+<p>
+we can use **reshape** to handle (4) to (4,1,1) such like this 
+
+however ,we can use anotherone 
+
+the special **np.newaxis** attribute along with “full” slices to insert the new
+axis
+</p>
+
+~~~~~~~~~
+
+arr_1d = np.random.normal(size=3)
+
+arr_1d[:, np.newaxis]
+array([[-2.3594],
+       [-0.1995],
+       [-1.542 ]])
+       
+arr_1d[np.newaxis, :]
+array([[-2.3594, -0.1995, -1.542 ]])
+
+~~~~~~~~~
+
+You might be wondering if there’s a way to generalize demeaning over an axis without
+sacrificing performance. There is, but it requires some indexing gymnastics
+
+
+
+~~~~
+
+def demean_axis(arr, axis=0):
+
+    means = arr.mean(axis)
+    
+    # This generalizes things like [:, :, np.newaxis] to N dimensions
+    
+    indexer = [slice(None)] * arr.ndim
+    indexer[axis] = np.newaxis
+    return arr - means[indexer]
+
+~~~~
