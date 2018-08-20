@@ -706,7 +706,7 @@ array([[ 0.0929, 0.2817],
 
 ~~~~~~
 
-<img src="concatenat_split.png" />
+<img src="concatenating_split.png" />
 
 ### r_ and c_
 ~~~~~~~
@@ -901,3 +901,47 @@ def demean_axis(arr, axis=0):
     return arr - means[indexer]
 
 ~~~~
+
+
+## Mathematical and Statistical Methods
+
+~~~~~~~~
+
+In [178]: arr
+Out[178]:
+array([[ 2.1695, -0.1149, 2.0037, 0.0296],
+[ 0.7953, 0.1181, -0.7485, 0.585 ],
+[ 0.1527, -1.5657, -0.5625, -0.0327],
+[-0.929 , -0.4826, -0.0363, 1.0954],
+[ 0.9809, -0.5895, 1.5817, -0.5287]])
+
+In [179]: arr.mean()
+Out[179]: 0.19607051119998253
+
+In [180]: np.mean(arr)
+Out[180]: 0.19607051119998253
+
+
+In [182]: arr.mean(axis=1)  # arr.mean(1)
+Out[182]: array([ 1.022 , 0.1875, -0.502 , -0.0881, 0.3611])
+
+In [183]: arr.sum(axis=0)
+Out[183]: array([ 3.1693, -2.6345, 2.2381, 1.1486])
+
+
+
+In [184]: arr = np.array([0, 1, 2, 3, 4, 5, 6, 7])
+
+#前n项和前n项积
+
+In [185]: arr.cumsum()  #累加 
+Out[185]: array([ 0, 1, 3, 6, 10, 15, 21, 28])
+
+
+In [185]: arrcumprod()  #累乘
+
+
+
+~~~~~~~~
+
+<img  src="statistic.png"  />
