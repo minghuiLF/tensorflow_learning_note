@@ -1006,5 +1006,249 @@ array([[-0.2555, 0.6033, 1.2636],
 appp A
 
 
+# Advanced ufunc Usage
+
+## ufunc Instance Methods
+
+<img src="ufunc_instance_method.png" />
+
+### reduce
+
+~~~~~~~~~
+
+logical_and.reduce() =all()
+add.reduce() =sum()
+
+X = np.arange(8)
+X.reshape((2,2,2))
+
+X=
+[[[0,1],
+  [2,3]],
+ [[4,5],
+  [6,7]]
+
+np.add.reduce(X,0)
+np.add.reduce(X)
+[[4,6]
+ [8,10]]
+
+np.add.reduce(X,1)
+[[2,4]
+ [10,12]]
+np.add.reduce(X,2)
+[[1,5]
+ [9,13]]
+
+
+~~~~~~~~~
+
+### accumulate
+
+accumulate is related to reduce like cumsum is related to sum.
+~~~~~~~~~
+
+In [123]: arr = np.arange(15).reshape((3, 5))
+In [124]: np.add.accumulate(arr, axis=1)
+Out[124]:
+array([[ 0, 1, 3, 6, 10],
+       [ 5, 11, 18, 26, 35],
+       [10, 21, 33, 46, 60]])
+
+~~~~~~~~~
+
+### outer
+
+outer performs a pairwise cross-product between two arrays:
+
+~~~~~~~~~
+In [125]: arr = np.arange(3).repeat([1, 2, 2])
+In [126]: arr
+Out[126]: array([0, 1, 1, 2, 2])
+
+In [127]: np.multiply.outer(arr, np.arange(5))
+Out[127]:
+array([[0, 0, 0, 0, 0],
+       [0, 1, 2, 3, 4],
+       [0, 1, 2, 3, 4],
+       [0, 2, 4, 6, 8],
+       [0, 2, 4, 6, 8]])
+
+The output of outer will have a dimension that is the sum of the dimensions of the
+inputs:
+
+In [128]: x, y = np.random.randn(3, 4), np.random.randn(5)
+
+In [129]: result = np.subtract.outer(x, y)
+
+In [130]: result.shape
+Out[130]: (3, 4, 5)
+~~~~~~~~~
+
+
+### reduceat
+
+The last method, reduceat, performs a “local reduce,” in essence an array groupby
+operation in which slices of the array are aggregated together. It accepts a sequence of
+“bin edges” that indicate how to split and aggregate the values:
+
+~~~~~~~~~~~
+In [131]: arr = np.arange(10)
+In [132]: np.add.reduceat(arr, [0, 5, 8])
+Out[132]: array([10, 18, 17])
+
+The results are the reductions (here, sums) performed over arr[0:5], arr[5:8], and
+arr[8:].
+
+As with the other methods, you can pass an axis argument:
+
+In [133]: arr = np.multiply.outer(np.arange(4), np.arange(5))
+In [134]: arr
+Out[134]:
+array([[ 0, 0, 0, 0, 0],
+       [ 0, 1, 2, 3, 4],
+       [ 0, 2, 4, 6, 8],
+       [ 0, 3, 6, 9, 12]])
+
+
+In [135]: np.add.reduceat(arr, [0, 2, 4], axis=1)
+Out[135]:
+array([[ 0, 0, 0],
+       [ 1, 5, 4],
+       [ 2, 10, 8],
+       [ 3, 15, 12]])
+
+~~~~~~~~~~~
+
+##  Writing New ufuncs in Python **
+
+Python for data analisis  p468
+
+## Structured and Record Arrays *
+
+Python for data analisis  p469
+
+You may have noticed up until now that ndarray is a homogeneous data container;
+that is, it represents a block of memory in which each element takes up the same
+number of bytes, determined by the dtype. On the surface, this would appear to not
+allow you to represent heterogeneous or tabular-like data. A structured array is an
+ndarray in which each element can be thought of as representing a struct in C (hence
+the “structured” name) or a row in a SQL table with multiple named fields:
+
+~~~~~~~~
+
+In [144]: dtype = [('x', np.float64), ('y', np.int32)]
+In [145]: sarr = np.array([(1.5, 6), (np.pi, -2)], dtype=dtype)
+In [146]: sarr
+Out[146]:
+array([( 1.5 , 6), ( 3.1416, -2)],
+dtype=[('x', '<f8'), ('y', '<i4')])
+
+~~~~~~~~
+
+There are several ways to specify a structured dtype (see the online NumPy documentation).
+One typical way is as a list of tuples with (field_name, field_data_type).
+Now, the elements of the array are tuple-like objects whose elements can be accessed
+like a dictionary:
+
+~~~~~~
+In [147]: sarr[0]
+Out[147]: ( 1.5, 6)
+In [148]: sarr[0]['y']
+Out[148]: 6
+
+~~~~~~
+
+The field names are stored in the dtype.names attribute. When you access a field on
+the structured array, a strided view on the data is returned, thus copying nothing:
+
+~~~~
+In [149]: sarr['x']
+Out[149]: array([ 1.5 , 3.1416])
+
+~~~~
+
+### Nested dtypes and Multidimensional Fields
+
+When specifying a structured dtype, you can additionally pass a shape (as an int or
+tuple):
+
+~~~~~~
+In [150]: dtype = [('x', np.int64, 3), ('y', np.int32)]
+In [151]: arr = np.zeros(4, dtype=dtype)
+In [152]: arr
+Out[152]:
+array([([0, 0, 0], 0), ([0, 0, 0], 0), ([0, 0, 0], 0), ([0, 0, 0], 0)],
+dtype=[('x', '<i8', (3,)), ('y', '<i4')])
+
+In this case, the x field now refers to an array of length 3 for each record:
+
+In [153]: arr[0]['x']
+Out[153]: array([0, 0, 0])
+
+Conveniently, accessing arr['x'] then returns a two-dimensional array instead of a
+one-dimensional array as in prior examples:
+
+In [154]: arr['x']
+Out[154]:
+array([[0, 0, 0],
+[0, 0, 0],
+[0, 0, 0],
+[0, 0, 0]])
+
+This enables you to express more complicated, nested structures as a single block of
+memory in an array. You can also nest dtypes to make more complex structures. Here
+is an example:
+
+In [155]: dtype = [('x', [('a', 'f8'), ('b', 'f4')]), ('y', np.int32)]
+
+In [156]: data = np.array([((1, 2), 5), ((3, 4), 6)], dtype=dtype)
+
+In [157]: data['x']
+Out[157]:
+array([( 1., 2.), ( 3., 4.)],
+dtype=[('a', '<f8'), ('b', '<f4')])
+
+In [158]: data['y']
+Out[158]: array([5, 6], dtype=int32)
+
+In [159]: data['x']['a']
+Out[159]: array([ 1., 3.])
+
+pandas DataFrame does not support this feature directly, though it is similar to hierarchical
+indexing.
+~~~~~~
+
+### Why Use Structured Arrays?
+
+Compared with, say, a pandas DataFrame, NumPy structured arrays are a comparatively
+low-level tool. They provide a means to interpreting a block of memory as a
+tabular structure with arbitrarily complex nested columns. Since each element in the
+array is represented in memory as a fixed number of bytes, structured arrays provide
+a very fast and efficient way of writing data to and from disk (including memory
+maps), transporting it over the network, and other such uses.
+
+As another common use for structured arrays, writing data files as fixed-length
+record byte streams is a common way to serialize data in C and C++ code, which is
+commonly found in legacy systems in industry. As long as the format of the file is
+known (the size of each record and the order, byte size, and data type of each element),
+the data can be read into memory with np.fromfile. Specialized uses like this
+are beyond the scope of this book, but it’s worth knowing that such things are
+possible.
+
+
+
+
+
+~~~~~~~~~~~~sort !!! app A
+
+
+
+
+
+
+
+
+
 
 
