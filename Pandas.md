@@ -14,6 +14,8 @@
 
 <img src="ndarray.png"/>
 
+#一些常见矩阵创建方法
+
 ~~~~~
   Data=[1,2,3]                                              
   np.array(Data)
@@ -34,7 +36,7 @@
   np.full(10,5)
   array([ 5*10])
   
-  #一些常见矩阵创建方法
+  
   
   arr = np.arange(32).reshape((8, 4))                         
   
@@ -42,8 +44,11 @@
   for i in range(8):
       arr[i] = i
   
-  arr=np.ones(10,dtype='?')    #bool
+  arr=np.ones(10,dtype='?')                       #bool
   np.full((10,5),True) 
+  
+  col = np.array([1.28, -0.42, 0.44, 1.6])        #纵向化
+  col[:,np.newaxis]           
   
   D.dtype
   D.ndim
@@ -144,6 +149,7 @@ np.float64.mro()
  arr_slice[:]  all  
  
  [::-1] reverse
+ arr[::2] 奇数行 ， 以2为单位跳跃
  
  arr = np.ones(10)
  arr[5:8] = 12 普通的array 不可以
@@ -946,8 +952,57 @@ In [185]: arrcumprod()  #累乘
 
 <img  src="statistic.png"  />
 
-## Sorting
 
+## Methods for Boolean Arrays
+
+~~~~~~
+
+In [190]: arr = np.random.randn(100)
+In [191]: (arr > 0).sum() # Number of positive values
+Out[191]: 42
+
+
+
+In [192]: bools = np.array([False, False, True, False])
+In [193]: bools.any()
+Out[193]: True
+In [194]: bools.all()
+Out[194]: False
+
+~~~~~~
+
+These methods also work with non-boolean arrays, where non-zero elements evaluate
+to True.
+
+
+## Sorting
+~~~~~
+
+In [195]: arr = np.random.randn(6)
+In [196]: arr
+Out[196]: array([ 0.6095, -0.4938, 1.24 , -0.1357, 1.43 , -0.8469])
+In [197]: arr.sort()
+In [198]: arr
+Out[198]: array([-0.8469, -0.4938, -0.1357, 0.6095, 1.24 , 1.43 ])
+
+In [200]: arr
+Out[200]:
+array([[ 0.6033, 1.2636, -0.2555],
+[-0.4457, 0.4684, -0.9616],
+[-1.8245, 0.6254, 1.0229],
+[ 1.1074, 0.0909, -0.3501],
+[ 0.218 , -0.8948, -1.7415]])
+
+In [201]: arr.sort(1)                         /sort the 1st axis 
+In [202]: arr
+Out[202]:
+array([[-0.2555, 0.6033, 1.2636],
+[-0.9616, -0.4457, 0.4684],
+[-1.8245, 0.6254, 1.0229],
+[-0.3501, 0.0909, 1.1074],
+[-1.7415, -0.8948, 0.218 ]])
+
+~~~~~
 appp A
 
 
