@@ -793,7 +793,461 @@ New York 12 13 14
 
 ~~~~~~~~~~~~~
 
+<img src="index_option1.png" />
 
+
+<img src="index_option2.png" />
+
+
+### Integer Indexes
+
+Working with pandas objects indexed by integers is something that often trips up
+new users due to some differences with indexing semantics on built-in Python data
+structures like lists and tuples. For example, you might not expect the following code
+to generate an error:
+
+~~~~~~~~~
+
+ser = pd.Series(np.arange(3.))
+ser
+ser[-1]
+
+On the other hand, with a non-integer index, there is no potential for ambiguity:
+
+In [145]: ser2 = pd.Series(np.arange(3.), index=['a', 'b', 'c'])
+In [146]: ser2[-1]
+Out[146]: 2.0
+
+
+To keep things consistent, if you have an axis index containing integers, data selection
+will always be label-oriented. For more precise handling, use loc (for labels) or iloc
+(for integers):
+------------------------------------
+In [147]: ser[:1]
+
+Out[147]:
+0 0.0
+dtype: float64
+------------------------------------
+In [148]: ser.loc[:1]
+
+Out[148]:
+0 0.0
+1 1.0
+dtype: float64
+------------------------------------
+In [149]: ser.iloc[:1]
+
+Out[149]:
+0 0.0
+dtype: float64
+
+~~~~~~~~~
+
+
+
+### Arithmetic and Data Alignment
+
+~~~~~~~
+
+In [150]: s1 = pd.Series([7.3, -2.5, 3.4, 1.5], index=['a', 'c', 'd', 'e'])
+
+In [151]: s2 = pd.Series([-2.1, 3.6, -1.5, 4, 3.1],
+.....: index=['a', 'c', 'e', 'f', 'g'])
+
+
+In [152]: s1
+Out[152]:
+a 7.3
+c -2.5
+d 3.4
+e 1.5
+dtype: float64
+
+In [153]: s2
+Out[153]:
+a -2.1
+c 3.6
+e -1.5
+f 4.0
+g 3.1
+dtype: float64
+
+Adding these together yields:
+
+In [154]: s1 + s2
+Out[154]:
+a 5.2
+c 1.1
+d NaN
+e 0.0
+f NaN
+g NaN
+dtype: float64
+
+The internal data alignment introduces missing values in the label locations that don’t
+overlap. Missing values will then propagate in further arithmetic computations.
+
+In the case of DataFrame alignment is performed on both the rows and the columns
+
+
+In [155]: df1 = pd.DataFrame(np.arange(9.).reshape((3, 3)), columns=list('bcd'),
+.....: index=['Ohio', 'Texas', 'Colorado'])
+In [156]: df2 = pd.DataFrame(np.arange(12.).reshape((4, 3)), columns=list('bde'),
+.....: index=['Utah', 'Ohio', 'Texas', 'Oregon'])
+
+In [157]: df1
+Out[157]:
+            b    c    d
+Ohio        0.0 1.0 2.0
+Texas       3.0 4.0 5.0
+Colorado    6.0 7.0 8.0
+
+In [158]: df2
+Out[158]:
+           b   d     e
+Utah     0.0  1.0   2.0
+Ohio     3.0  4.0   5.0
+Texas    6.0  7.0   8.0
+Oregon   9.0  10.0  11.0
+
+Adding these together returns a DataFrame whose index and columns are the unions
+of the ones in each DataFrame:
+
+In [159]: df1 + df2
+Out[159]:
+          b   c   d   e
+Colorado NaN NaN NaN NaN
+Ohio     3.0 NaN 6.0 NaN
+Oregon   NaN NaN NaN NaN
+Texas    9.0 NaN 12.0 NaN
+Utah     NaN NaN NaN NaN
+
+Since the 'c' and 'e' columns are not found in both DataFrame objects, they appear
+as all missing in the result. The same holds for the rows whose labels are not common
+to both objects.
+
+If you add DataFrame objects with no column or row labels in common, the result
+will contain all nulls:
+
+Out[162]:
+A
+0 1
+1 2
+
+Out[163]:
+B
+0 3
+1 4
+
+In [164]: df1 - df2
+Out[164]:
+A B
+0 NaN NaN
+1 NaN NaN
+
+             Arithmetic methods with ill values
+             
+In [168]: df1
+Out[168]:
+a b c d
+0 0.0 1.0 2.0 3.0
+1 4.0 5.0 6.0 7.0
+2 8.0 9.0 10.0 11.0
+
+In [169]: df2
+Out[169]:
+a b c d e
+0 0.0 1.0 2.0 3.0 4.0
+1 5.0 NaN 7.0 8.0 9.0
+2 10.0 11.0 12.0 13.0 14.0
+3 15.0 16.0 17.0 18.0 19.0            
+
+In [171]: df1.add(df2, fill_value=0)
+Out[171]:
+   a    b    c     d    e
+0  0.0  2.0  4.0   6.0  4.0
+1  9.0  5.0  13.0 15.0  9.0
+2  18.0 20.0 22.0 24.0 14.0
+3  15.0 16.0 17.0 18.0 19.0
+
+
+~~~~~~~
+
+#### Flexible arithmetic methods
+
+listing of Series and DataFrame methods for arithmetic. Each of
+them has a counterpart, starting with the letter r, that has arguments flipped.
+
+this give all ways(cause have flipped) to use arithmetic with fill_value
+
+<img width="300" src="arithmetic_methods.png" />
+
+#### Operations between DataFrame and Series
+
+similar to the broadcast in Numpy
+
+
+~~~~~~~~~~
+
+In [179]: frame = pd.DataFrame(np.arange(12.).reshape((4, 3)),
+.....: columns=list('bde'),
+.....: index=['Utah', 'Ohio', 'Texas', 'Oregon'])
+In [180]: series = frame.iloc[0]
+
+In [181]: frame
+Out[181]:
+       b   d   e
+Utah 0.0 1.0 2.0
+Ohio 3.0 4.0 5.0
+Texas 6.0 7.0 8.0
+Oregon 9.0 10.0 11.0
+
+In [182]: series
+Out[182]:
+b 0.0
+d 1.0
+e 2.0
+Name: Utah, dtype: float64
+
+In [183]: frame - series
+Out[183]:
+       b  d    e
+Utah 0.0 0.0 0.0
+Ohio 3.0 3.0 3.0
+Texas 6.0 6.0 6.0
+Oregon 9.0 9.0 9.0
+
+
+
+If an index value is not found in either the DataFrame’s columns or the Series’s index,
+the objects will be reindexed to form the union:
+
+
+If you want to instead broadcast over the columns, matching on the rows, you have to
+use one of the arithmetic methods. For example:
+
+In [186]: series3 = frame['d']
+In [187]: frame
+Out[187]:
+       b  d   e
+Utah 0.0 1.0 2.0
+Ohio 3.0 4.0 5.0
+Texas 6.0 7.0 8.0
+Oregon 9.0 10.0 11.0
+
+In [188]: series3
+Out[188]:
+Utah 1.0
+Ohio 4.0
+Texas 7.0
+Oregon 10.0
+Name: d, dtype: float64
+
+In [189]: frame.sub(series3, axis='index')   # or axis=0
+Out[189]:
+b d e
+Utah -1.0 0.0 1.0
+Ohio -1.0 0.0 1.0
+Texas -1.0 0.0 1.0
+Oregon -1.0 0.0 1.0
+
+
+
+~~~~~~~~~~
+
+## Function Application and Mapping
+
+NumPy ufuncs (element-wise array methods) also work with pandas objects:
+
+
+
+~~~~~~
+In [191]: frame
+Out[191]:
+          b d e
+Utah -0.204708 0.478943 -0.519439
+Ohio -0.555730 1.965781 1.393406
+Texas 0.092908 0.281746 0.769023
+Oregon 1.246435 1.007189 -1.296221
+
+In [192]: np.abs(frame)
+Out[192]:
+         b d e
+Utah 0.204708 0.478943 0.519439
+Ohio 0.555730 1.965781 1.393406
+Texas 0.092908 0.281746 0.769023
+Oregon 1.246435 1.007189 1.296221
+
+~~~~~~
+
+<img width="800" src="unary_uf.png" />
+
+----------------------------------------------------
+
+
+Another frequent operation is applying a function on one-dimensional arrays to each
+column or row. DataFrame’s apply method does exactly this:
+
+~~~~~~
+
+In [193]: f = lambda x: x.max() - x.min()
+
+In [194]: frame.apply(f)
+Out[194]:
+b 1.802165
+d 1.684034
+e 2.689627
+dtype: float64
+
+
+In [195]: frame.apply(f, axis='columns')
+Out[195]:
+Utah 0.998382
+Ohio 2.521511
+Texas 0.676115
+Oregon 2.542656
+dtype: float64
+
+~~~~~~
+
+
+The function passed to apply need not return a scalar value; it can also return a Series
+with multiple values:
+
+~~~~~
+In [196]: def f(x):
+.....: return pd.Series([x.min(), x.max()], index=['min', 'max'])
+
+
+In [197]: frame.apply(f)
+Out[197]:
+b d e
+min -0.555730 0.281746 -1.296221
+max 1.246435 1.965781 1.393406
+
+~~~~~
+
+
+Element-wise Python functions can be used, too. Suppose you wanted to compute a
+formatted string from each floating-point value in frame. You can do this with applymap:
+
+applymap: Element-wise Python functions for Dataframe
+map: Element-wise Python functions for Serise
+
+~~~~~~~
+In [198]: format = lambda x: '%.2f' % x
+In [199]: frame.applymap(format)
+Out[199]:
+b d e
+Utah -0.20 0.48 -0.52
+Ohio -0.56 1.97 1.39
+Texas 0.09 0.28 0.77
+Oregon 1.25 1.01 -1.30
+
+The reason for the name applymap is that Series has a map method for applying an
+element-wise function:
+
+In [200]: frame['e'].map(format)
+Out[200]:
+Utah -0.52
+Ohio 1.39
+Texas 0.77
+Oregon -1.30
+Name: e, dtype: object
+
+
+~~~~~~~
+
+
+## Sorting and Ranking
+
+obj.sort_index(axis=0, ascending=True)
+
+
+~~~~~~~~~~
+
+In [201]: obj = pd.Series(range(4), index=['d', 'a', 'b', 'c'])
+In [202]: obj.sort_index()
+Out[202]:
+a 1
+b 2
+c 3
+d 0
+dtype: int64
+
+
+
+In [203]: frame = pd.DataFrame(np.arange(8).reshape((2, 4)),
+.....: index=['three', 'one'],
+.....: columns=['d', 'a', 'b', 'c'])
+
+In [204]: frame.sort_index()
+Out[204]:
+      d a b c
+one   4 5 6 7
+three 0 1 2 3
+
+In [205]: frame.sort_index(axis=1)
+Out[205]:
+       a b c d
+three  1 2 3 0
+one    5 6 7 4
+
+In [206]: frame.sort_index(axis=1, ascending=False)
+Out[206]:
+d c b a
+three 0 3 2 1
+one 4 7 6 5
+
+~~~~~~~~~~
+
+obj.sort_values()
+sort_values(by='b')
+sort_values(by=['a', 'b'])
+~~~~~~~
+
+Any missing values are sorted to the end of the Series by default:
+
+In [209]: obj = pd.Series([4, np.nan, 7, np.nan, -3, 2])
+
+In [210]: obj.sort_values()
+Out[210]:
+4 -3.0
+5 2.0
+0 4.0
+2 7.0
+1 NaN
+3 NaN
+dtype: float64
+
+In [212]: frame
+Out[212]:
+  a b
+0 0 4
+1 1 7
+2 0 -3
+3 1 2
+
+In [213]: frame.sort_values(by='b')
+Out[213]:
+  a b
+2 0 -3
+3 1 2
+0 0 4
+1 1 7
+
+To sort by multiple columns, pass a list of names:
+
+In [214]: frame.sort_values(by=['a', 'b'])
+Out[214]:
+a b
+2 0 -3
+0 0 4
+3 1 2
+1 1 7
+
+~~~~~~~
 
 
 
