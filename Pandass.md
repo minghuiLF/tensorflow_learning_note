@@ -1251,3 +1251,118 @@ a b
 
 
 
+### Axis Indexes with Duplicate Labels
+
+~~~~~~~~
+In [222]: obj = pd.Series(range(5), index=['a', 'a', 'b', 'b', 'c'])
+In [223]: obj
+Out[223]:
+a 0
+a 1
+b 2
+b 3
+c 4
+dtype: int64
+The index’s is_unique property can tell you whether its labels are unique or not:
+In [224]: obj.index.is_unique
+Out[224]: False
+
+
+Data selection is one of the main things that behaves differently with duplicates.
+Indexing a label with multiple entries returns a Series, while single entries return a
+scalar value:
+
+In [225]: obj['a']
+Out[225]:
+a 0
+a 1
+dtype: int64
+
+In [226]: obj['c']
+Out[226]: 4
+~~~~~~~~
+
+
+###  Summarizing and Computing Descriptive Statistics 
+
+~~~~~~~~~~~
+In [231]: df
+Out[231]:
+one two
+a 1.40 NaN
+b 7.10 -4.5
+c NaN NaN
+d 0.75 -1.3
+
+Calling DataFrame’s sum method returns a Series containing column sums:
+
+In [232]: df.sum()
+Out[232]:
+one 9.25
+two -5.80
+dtype: float64
+Passing axis='columns' or axis=1 sums across the columns instead:
+
+In [233]: df.sum(axis='columns')
+Out[233]:
+a 1.40
+b 2.60
+c NaN
+d -0.55
+dtype: float64
+
+NA values are excluded unless the entire slice (row or column in this case) is NA.
+This can be disabled with the skipna option:
+
+In [234]: df.mean(axis='columns', skipna=False)
+Out[234]:
+a NaN
+b 1.300
+c NaN
+d -0.275
+dtype: float64
+
+
+
+~~~~~~~~~~~
+
+<img width="500" src="option_for_reduction_method.png" />
+
+Some methods, like idxmin and idxmax, return indirect statistics like the index value
+where the minimum or maximum values are attained:
+
+idxmin()   idx m~~~     有个x
+idxmax()
+
+accumulations
+df.cumsum()
+
+describe()
+~~~~~~~
+In [237]: df.describe()
+Out[237]:
+         one     two
+count 3.000000 2.000000
+mean 3.083333 -2.900000
+std 3.493685 2.262742
+min 0.750000 -4.500000
+25% 1.075000 -3.700000
+50% 1.400000 -2.900000
+75% 4.250000 -2.100000
+max 7.100000 -1.300000
+
+On non-numeric data, describe produces alternative summary statistics:
+
+In [238]: obj = pd.Series(['a', 'a', 'b', 'c'] * 4)
+In [239]: obj.describe()
+Out[239]:
+count 16
+unique 3
+top a
+freq 8
+dtype: object
+
+~~~~~~~
+
+<img  src="Descriptive_and_summary_statistics.png"  />
+
