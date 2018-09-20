@@ -595,6 +595,9 @@ e 4.0
 dtype: float64
 
 data.drop('two', axis=1)  # drop columns 
+
+
+data.dropna() # drop Nan row
 ~~~~~
 
 
