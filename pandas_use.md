@@ -10,3 +10,12 @@ read_file
 =========
 
 - read_csv(file,sep=",")
+
+
+change datatype
+===============
+
+### string to int64
+
+- data.iloc[:,-2]=data.iloc[:,-2].astype("i8")   
+- data.iloc[:,-2]=pd.to_numeric(data.iloc[:,-2])   
