@@ -7,6 +7,8 @@ selection
 
 - boolean select 根据某一列的值来选择 data[pd.isnull(data['Sun_hours'])] 
 
+- data['str_name'] 和 data[['str_name']] 的区别 前者是Series 后者是Frame
+
 null value handle
 =================
 
