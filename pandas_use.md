@@ -7,7 +7,12 @@ selection
 
 - boolean select 根据某一列的值来选择 data[pd.isnull(data['Sun_hours'])] 
 
+null value handle
+=================
 
+- data.isnull()
+
+- data.column_name.notnull()
 
 read_file
 =========
@@ -33,3 +38,8 @@ adding other column
 - labels = ['Low','Med','High']
 
 - data['Sun_level'] = pd.cut(data.Sun_hours, [-1,5,10,25], labels=labels)
+
+
+暂时不知道的分类
+===============
+boolean_data.shift(1)   往后shift 1位
